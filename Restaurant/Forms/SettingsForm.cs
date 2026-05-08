@@ -41,5 +41,12 @@ namespace Restaurant.Forms
             OspatariForm f = new OspatariForm();
             f.ShowDialog();
         }
+
+        // Deschide formularul pentru inspectia bazei de date pentru rapoarte si note de plata
+        private void btnBazaDate_Click(object sender, EventArgs e)
+        {
+            IstoricForm f = new IstoricForm();
+            f.ShowDialog();
+        }
     }
 }

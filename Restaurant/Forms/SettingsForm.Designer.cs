@@ -31,6 +31,7 @@
             label1 = new Label();
             btnEditateMeniu = new Button();
             button1 = new Button();
+            btnBazaDate = new Button();
             SuspendLayout();
             // 
             // label1
@@ -70,12 +71,26 @@
             button1.UseVisualStyleBackColor = false;
             button1.Click += btnGestiuneOsp_Click;
             // 
+            // btnBazaDate
+            // 
+            btnBazaDate.BackColor = Color.FromArgb(244, 235, 221);
+            btnBazaDate.FlatStyle = FlatStyle.Flat;
+            btnBazaDate.ForeColor = Color.FromArgb(31, 38, 44);
+            btnBazaDate.Location = new Point(12, 179);
+            btnBazaDate.Name = "btnBazaDate";
+            btnBazaDate.Size = new Size(255, 29);
+            btnBazaDate.TabIndex = 4;
+            btnBazaDate.Text = "Istoric Rapoarte";
+            btnBazaDate.UseVisualStyleBackColor = false;
+            btnBazaDate.Click += btnBazaDate_Click;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(31, 38, 44);
-            ClientSize = new Size(279, 196);
+            ClientSize = new Size(279, 244);
+            Controls.Add(btnBazaDate);
             Controls.Add(button1);
             Controls.Add(btnEditateMeniu);
             Controls.Add(label1);
@@ -90,5 +105,6 @@
         private Label label1;
         private Button btnEditateMeniu;
         private Button button1;
+        private Button btnBazaDate;
     }
 }

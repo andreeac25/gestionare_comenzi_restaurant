@@ -43,6 +43,26 @@ namespace RestaurantApp.Services
                     Password TEXT NOT NULL,
                     Role TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS NotePlata (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    MasaId INTEGER,
+                    Ospatar TEXT,
+                    Total REAL,
+                    MetodaPlata TEXT,
+                    Data TEXT,
+                    PdfPath TEXT
+                );
+
+                CREATE TABLE IF NOT EXISTS RapoarteZilnice (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    DataRaport TEXT,
+                    TotalCash REAL,
+                    TotalCard REAL,
+                    TotalGeneral REAL,
+                    NrMese INTEGER,
+                    GeneratDe TEXT,
+                    PdfPath TEXT
+                );
                 ";
                 cmd.ExecuteNonQuery();
 

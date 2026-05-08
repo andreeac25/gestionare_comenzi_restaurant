@@ -117,7 +117,7 @@
             btnIncaseaza.TabIndex = 4;
             btnIncaseaza.Text = "Incaseaza";
             btnIncaseaza.UseVisualStyleBackColor = false;
-            btnIncaseaza.Click += button2_Click;
+            btnIncaseaza.Click += btnIncaseaza_Click;
             // 
             // lblMasa
             // 

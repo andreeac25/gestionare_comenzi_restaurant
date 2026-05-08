@@ -1,4 +1,5 @@
-﻿using PdfSharp.Drawing;
+﻿using Microsoft.Data.Sqlite;
+using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Restaurant.Models;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +23,7 @@ namespace Restaurant.Forms
         Dictionary<int, List<BonItem>> meseBonuri = new Dictionary<int, List<BonItem>>(); //fiecare masă are propriul bon
         private User currentUser;
         private bool esteLogout = false;
+
 
 
         // constructor alternativ
@@ -131,11 +134,68 @@ namespace Restaurant.Forms
                 .Where(x => x.MetodaPlata == "Card")
                 .Sum(x => x.Total);
 
-            GenereazaPDFRaport(nrMese, total, totalCash, totalCard);
+            string path = GenereazaPDFRaport(
+                nrMese,
+                total,
+                totalCash,
+                totalCard
+            );
+
+            decimal totalGeneral = total;
+
+            SaveRaportInDatabase(
+                totalCash,
+                totalCard,
+                totalGeneral,
+                nrMese,
+                path
+            );
         }
 
+        // salvează raportul în baza de date
+        private static void SaveRaportInDatabase(
+            decimal cash,
+            decimal card,
+            decimal total,
+            int mese,
+            string pdfPath)
+        {
+            string connStr = "Data Source=Data/restaurant.db";
+            
+
+            using var conn = new SqliteConnection(connStr);
+            conn.Open();
+
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText = @"
+            INSERT INTO RapoarteZilnice
+            (DataRaport, TotalCash, TotalCard,
+             TotalGeneral, NrMese, GeneratDe, PdfPath)
+
+            VALUES
+            ($data, $cash, $card,
+             $total, $mese, $user, $pdf)";
+
+            cmd.Parameters.AddWithValue("$data",
+                DateTime.Now.ToString("yyyy-MM-dd"));
+
+            cmd.Parameters.AddWithValue("$cash", cash);
+            cmd.Parameters.AddWithValue("$card", card);
+            cmd.Parameters.AddWithValue("$total", total);
+            cmd.Parameters.AddWithValue("$mese", mese);
+
+            cmd.Parameters.AddWithValue("$user",
+                AppSession.CurrentUser.Username);
+
+            cmd.Parameters.AddWithValue("$pdf", pdfPath);
+
+            cmd.ExecuteNonQuery();
+        }
+
+
         // generează PDF-ul raportului zilnic
-        public static void GenereazaPDFRaport(int nrMese, decimal total, decimal cash, decimal card)
+        public static string GenereazaPDFRaport(int nrMese, decimal total, decimal cash, decimal card)
         {
             // salvare
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -215,6 +275,8 @@ namespace Restaurant.Forms
                 FileName = path,
                 UseShellExecute = true
             });
+
+            return path;
         }
 
         // buton raport -> generează și închide aplicația

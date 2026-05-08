@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using Microsoft.Data.Sqlite;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,7 @@ namespace Restaurant.Forms
         List<BonItem> bon = new List<BonItem>();
         // Lista produselor deja trimise
         List<BonItem> bonTrimis = new List<BonItem>();
+
 
         public ComandaForm()
         {
@@ -51,7 +53,7 @@ namespace Restaurant.Forms
         {
             InitializeComponent();
             this.masaId = masaId;
-            bon = bonExistent; 
+            bon = bonExistent;
             lblMasa.Text = "Masa " + masaId;
             RefreshBon();
         }
@@ -223,7 +225,7 @@ namespace Restaurant.Forms
         }
 
         // Fereastră de alegere metodă plată (Cash / Card)
-        private void button2_Click(object sender, EventArgs e)
+        private void btnIncaseaza_Click(object sender, EventArgs e)
         {
             Form f = new Form();
             f.Text = "Plata";
@@ -269,6 +271,7 @@ namespace Restaurant.Forms
         // Salvează încasarea (plata finală)
         private void SaveIncasare(string metoda)
         {
+
             decimal total = (decimal)bon.Sum(x => x.Pret * x.Cantitate);
 
             Incasare inc = new Incasare
@@ -282,11 +285,58 @@ namespace Restaurant.Forms
             MainForm.Incasari.Add(inc); // dacă o faci static
                                         // sau trimiți înapoi la MainForm
 
+            SaveNotaInDatabase(metoda); // salvare în baza de date
+
             bon.Clear();
 
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
+
+        // Salvează nota de plată în baza de date
+        private void SaveNotaInDatabase(string metoda)
+        {
+            string connStr = "Data Source=Data/restaurant.db";
+
+            using var conn = new Microsoft.Data.Sqlite.SqliteConnection(connStr);
+
+            conn.Open();
+
+            decimal total =
+                (decimal)bon.Sum(x => x.Pret * x.Cantitate);
+
+            string ospatar =
+                AppSession.CurrentUser.Username;
+
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText = @"
+            INSERT INTO NotePlata
+            (MasaId, Ospatar, Total,
+             MetodaPlata, Data, PdfPath)
+
+            VALUES
+            ($masa, $ospatar, $total,
+             $metoda, $data, $pdf)";
+
+            cmd.Parameters.AddWithValue("$masa", masaId);
+
+            cmd.Parameters.AddWithValue("$ospatar", ospatar);
+
+            cmd.Parameters.AddWithValue("$total", total);
+
+            cmd.Parameters.AddWithValue("$metoda", metoda);
+
+            cmd.Parameters.AddWithValue("$data",
+                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+            // momentan gol
+            cmd.Parameters.AddWithValue("$pdf", "");
+
+            cmd.ExecuteNonQuery();
+        }
+
+
 
         // Trimite comanda 
         private void btnTrimite_Click(object sender, EventArgs e)
