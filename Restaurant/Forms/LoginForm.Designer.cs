@@ -45,7 +45,7 @@
             label1.Name = "label1";
             label1.Size = new Size(109, 28);
             label1.TabIndex = 0;
-            label1.Text = "Username:";
+            label1.Text = "Utilizator:";
             // 
             // label2
             // 
