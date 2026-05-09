@@ -205,6 +205,57 @@ namespace Restaurant.Forms
             }
             // actualizare total bon
             lblTotal.Text = "Total: " + bon.Sum(x => x.Total).ToString("0.00") + " RON";
+            SaveComandaActiva();
+        }
+
+        // Salvează comanda activă în baza de date (pentru a putea fi încărcată ulterior)
+        private void SaveComandaActiva()
+        {
+            string connStr = "Data Source=Data/restaurant.db";
+
+            using var conn = new SqliteConnection(connStr);
+
+            conn.Open();
+
+            // ștergem comanda veche a mesei
+            var deleteCmd = conn.CreateCommand();
+
+            deleteCmd.CommandText =
+                "DELETE FROM ComenziActive WHERE MasaId = $masa";
+
+            deleteCmd.Parameters.AddWithValue("$masa", masaId);
+
+            deleteCmd.ExecuteNonQuery();
+
+            // salvăm din nou toate produsele
+            foreach (var item in bon)
+            {
+                var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+        INSERT INTO ComenziActive
+        (MasaId, ProdusId, NumeProdus,
+         Cantitate, Pret, Trimis)
+
+        VALUES
+        ($masa, $produs, $nume,
+         $cantitate, $pret, $trimis)";
+
+                cmd.Parameters.AddWithValue("$masa", masaId);
+
+                cmd.Parameters.AddWithValue("$produs", item.ProdusId);
+
+                cmd.Parameters.AddWithValue("$nume", item.Nume);
+
+                cmd.Parameters.AddWithValue("$cantitate", item.Cantitate);
+
+                cmd.Parameters.AddWithValue("$pret", item.Pret);
+
+                cmd.Parameters.AddWithValue("$trimis",
+                    item.Trimis ? 1 : 0);
+
+                cmd.ExecuteNonQuery();
+            }
         }
 
         private void lblTotal_Click(object sender, EventArgs e)
@@ -288,10 +339,32 @@ namespace Restaurant.Forms
             SaveNotaInDatabase(metoda); // salvare în baza de date
 
             bon.Clear();
+            DeleteComandaActiva(); // șterge comanda activă din baza de date
 
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
+
+        // Șterge comanda activă din baza de date după încasare
+        private void DeleteComandaActiva()
+        {
+            string connStr = "Data Source=Data/restaurant.db";
+
+            using var conn = new SqliteConnection(connStr);
+
+            conn.Open();
+
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText =
+                "DELETE FROM ComenziActive WHERE MasaId = $masa";
+
+            cmd.Parameters.AddWithValue("$masa", masaId);
+
+            cmd.ExecuteNonQuery();
+        }
+
+
 
         // Salvează nota de plată în baza de date
         private void SaveNotaInDatabase(string metoda)

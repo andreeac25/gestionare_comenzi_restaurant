@@ -53,6 +53,9 @@ namespace Restaurant.Forms
             btnMasa9.Tag = 9;
             btnMasa10.Tag = 10;
 
+            LoadComenziActive();  // încarcă comenzile active din baza de date
+
+
             // verificare sesiune user
             if (AppSession.CurrentUser == null)
             {
@@ -161,7 +164,7 @@ namespace Restaurant.Forms
             string pdfPath)
         {
             string connStr = "Data Source=Data/restaurant.db";
-            
+
 
             using var conn = new SqliteConnection(connStr);
             conn.Open();
@@ -283,7 +286,7 @@ namespace Restaurant.Forms
         private void btnRaport_Click(object sender, EventArgs e)
         {
             MainForm.GenereazaRaportFinal();
-            
+
         }
 
         // control comportament la închidere form
@@ -305,7 +308,67 @@ namespace Restaurant.Forms
 
             AppSession.CurrentUser = null;
 
-            this.Close(); 
+            this.Close();
+        }
+
+        //Incărcare comenzi active din baza de date la pornirea aplicației
+        private void LoadComenziActive()
+        {
+            string connStr = "Data Source=Data/restaurant.db";
+
+            using var conn = new SqliteConnection(connStr);
+            conn.Open();
+
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText = @"
+                SELECT *
+                FROM ComenziActive";
+
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                int masaId = Convert.ToInt32(reader["MasaId"]);
+
+                if (!meseBonuri.ContainsKey(masaId))
+                {
+                    meseBonuri[masaId] = new List<BonItem>();
+                }
+
+                meseBonuri[masaId].Add(new BonItem
+                {
+                    ProdusId = Convert.ToInt32(reader["ProdusId"]),
+                    Nume = reader["NumeProdus"].ToString(),
+                    Cantitate = Convert.ToInt32(reader["Cantitate"]),
+                    Pret = Convert.ToDouble(reader["Pret"]),
+                    Trimis = Convert.ToInt32(reader["Trimis"]) == 1
+                });
+            }
+
+            // Refresh UI
+            btnMasa1.BackColor = GetCuloare(1);
+            btnMasa2.BackColor = GetCuloare(2);
+            btnMasa3.BackColor = GetCuloare(3);
+            btnMasa4.BackColor = GetCuloare(4);
+            btnMasa5.BackColor = GetCuloare(5);
+            btnMasa6.BackColor = GetCuloare(6);
+            btnMasa7.BackColor = GetCuloare(7);
+            btnMasa8.BackColor = GetCuloare(8);
+            btnMasa9.BackColor = GetCuloare(9);
+            btnMasa10.BackColor = GetCuloare(10);
+        }
+
+        // funcție helper pentru a determina culoarea mesei în funcție de existența bonurilor
+        private Color GetCuloare(int masaId)
+        {
+            if (meseBonuri.ContainsKey(masaId)
+                && meseBonuri[masaId].Count > 0)
+            {
+                return ColorTranslator.FromHtml("#FF6B6B");
+            }
+
+            return Color.FromArgb(244, 235, 221);
         }
     }
 }

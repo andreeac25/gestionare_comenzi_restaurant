@@ -63,6 +63,15 @@ namespace RestaurantApp.Services
                     GeneratDe TEXT,
                     PdfPath TEXT
                 );
+                CREATE TABLE IF NOT EXISTS ComenziActive (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    MasaId INTEGER,
+                    ProdusId INTEGER,
+                    NumeProdus TEXT,
+                    Cantitate INTEGER,
+                    Pret REAL,
+                    Trimis INTEGER
+                );
                 ";
                 cmd.ExecuteNonQuery();
 
