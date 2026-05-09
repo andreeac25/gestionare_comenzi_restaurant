@@ -76,7 +76,7 @@
             btnAdaugaProdus.BackColor = Color.FromArgb(214, 198, 168);
             btnAdaugaProdus.FlatStyle = FlatStyle.Flat;
             btnAdaugaProdus.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnAdaugaProdus.Location = new Point(189, 407);
+            btnAdaugaProdus.Location = new Point(189, 406);
             btnAdaugaProdus.Name = "btnAdaugaProdus";
             btnAdaugaProdus.Size = new Size(75, 29);
             btnAdaugaProdus.TabIndex = 3;
