@@ -43,7 +43,7 @@
             dgvNote.Location = new Point(29, 104);
             dgvNote.Name = "dgvNote";
             dgvNote.RowHeadersWidth = 51;
-            dgvNote.Size = new Size(803, 305);
+            dgvNote.Size = new Size(930, 305);
             dgvNote.TabIndex = 0;
             // 
             // dgvRapoarte
@@ -52,7 +52,7 @@
             dgvRapoarte.Location = new Point(29, 446);
             dgvRapoarte.Name = "dgvRapoarte";
             dgvRapoarte.RowHeadersWidth = 51;
-            dgvRapoarte.Size = new Size(931, 333);
+            dgvRapoarte.Size = new Size(1053, 333);
             dgvRapoarte.TabIndex = 1;
             // 
             // label1
@@ -93,7 +93,7 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(47, 58, 68);
-            ClientSize = new Size(990, 791);
+            ClientSize = new Size(1127, 791);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
